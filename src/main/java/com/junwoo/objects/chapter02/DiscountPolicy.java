@@ -1,6 +1,5 @@
 package com.junwoo.objects.chapter02;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 

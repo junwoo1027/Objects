@@ -38,6 +38,14 @@ class MovieTest {
                         new PeriodCondition(DayOfWeek.THURSDAY, LocalTime.of(10,0), LocalTime.of(13,59))));
     }
 
+    Movie given_스타워즈() {
+        return new Movie(
+                "스타워즈",
+                Duration.ofMinutes(200),
+                Money.wons(10000),
+                new NonDiscountPolicy());
+    }
+
     abstract class TestCalculateMovieFee {
         abstract Movie givenMovie();
 
@@ -222,6 +230,59 @@ class MovieTest {
 
                         assertEquals(movieFee().getAmount(), money.getAmount());
                     }
+                }
+            }
+        }
+
+        @Nested
+        @DisplayName("영화가 스타워즈 일 때 (할인없음")
+        class withStarWars extends TestCalculateMovieFee {
+
+            @Override
+            Movie givenMovie() {
+                return given_스타워즈();
+            }
+
+            @Test
+            @DisplayName("할인되지 않은 금액을 리턴한다.")
+            void itReturnsNotDiscountFee() {
+                Screening screening = new Screening(givenMovie(), 0, given_월요일.withHour(10).withMinute(0));
+                Money money = subject(screening);
+
+                assertEquals(movieFee().getAmount(), money.getAmount());
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("changeDiscountPolicy 메소드는")
+    class changeDiscountPolicyTest {
+
+        @Nested
+        @DisplayName("영화가 스타워즈일 때")
+        class withStarWars extends TestCalculateMovieFee {
+
+            @Override
+            Movie givenMovie() {
+                return given_스타워즈();
+            }
+
+            @Nested
+            @DisplayName("새로운 퍼센트 할인 정책이 주어지면")
+            class withNewPercentDiscountPolicy {
+                DiscountPolicy discountPolicy = new PercentDiscountPolicy(0.1, new SequenceCondition(1));
+
+                @Test
+                @DisplayName("주어진 할인 정책으로 교체한다")
+                void itChangeDiscountPolicyTest() {
+                    final Movie starWars = givenMovie();
+                    final Money BasicFee = starWars.getFee();
+                    starWars.changeDiscountPolicy(discountPolicy);
+
+                    Screening screening = new Screening(starWars, 1, given_월요일.withHour(10).withMinute(0));
+                    Money money = starWars.calculateMovieFee(screening);
+
+                    assertEquals(BasicFee.times(1 - 0.1).getAmount(), money.getAmount());
                 }
             }
         }
