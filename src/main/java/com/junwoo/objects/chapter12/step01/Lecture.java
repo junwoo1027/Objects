@@ -36,4 +36,12 @@ public class Lecture {
     public Long failCount() {
         return scores.size() - passCount();
     }
+
+    public String status() {
+        return String.format("Title: %s, Evaluation Method: %s", title, getEvaluationMethod());
+    }
+
+    public String getEvaluationMethod() {
+        return "Pass or Fail";
+    }
 }

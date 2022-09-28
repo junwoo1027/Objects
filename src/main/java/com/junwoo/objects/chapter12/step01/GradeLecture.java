@@ -45,4 +45,9 @@ public class GradeLecture extends Lecture {
         return getScores().stream()
                 .filter(grade::include).count();
     }
+
+    @Override
+    public String getEvaluationMethod() {
+        return "Grade";
+    }
 }
